@@ -1,6 +1,7 @@
 import os
 import pytest
 import uuid
+import requests
 
 caldav_args = {
     # Those credentials are configured through the Travis UI
@@ -34,6 +35,8 @@ class ServerMixin(object):
                 args = self.storage_class.create_collection(collection, **args)
                 s = self.storage_class(**args)
                 if not list(s.list()):
+                    request.addfinalizer(
+                        lambda: s.session.request('DELETE', ''))
                     return args
 
             raise RuntimeError('Failed to find free collection.')
