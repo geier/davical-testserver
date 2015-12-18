@@ -1,5 +1,6 @@
 import os
 import pytest
+import uuid
 
 caldav_args = {
     # Those credentials are configured through the Travis UI
@@ -10,11 +11,6 @@ caldav_args = {
     'verify_fingerprint': \
         '36:B0:8B:AD:66:C6:FB:B0:1B:4E:CC:8A:07:C8:FF:37:49:AD:87:DE'
 }
-
-
-def _clear_collection(s):
-    for href, etag in s.list():
-        s.delete(href, etag)
 
 
 class ServerMixin(object):
@@ -31,11 +27,14 @@ class ServerMixin(object):
     def get_storage_args(self, davical_args, request):
         def inner(collection='test'):
             args = davical_args
-            if collection is not None:
-                assert collection.startswith('test')
+            assert collection and collection.startswith('test')
+
+            for _ in range(4):
+                collection += uuid.uuid4()
                 args = self.storage_class.create_collection(collection, **args)
                 s = self.storage_class(**args)
-                _clear_collection(s)
-                assert not list(s.list())
-            return args
+                if not list(s.list()):
+                    return args
+
+            raise RuntimeError('Failed to find free collection.')
         return inner
