@@ -28,10 +28,11 @@ class ServerMixin(object):
     def get_storage_args(self, davical_args, request):
         def inner(collection='test'):
             args = davical_args
-            assert collection and collection.startswith('test')
+            collection = collection or 'test'
+            assert collection.startswith('test')
 
             for _ in range(4):
-                collection += uuid.uuid4()
+                collection += str(uuid.uuid4())
                 args = self.storage_class.create_collection(collection, **args)
                 s = self.storage_class(**args)
                 if not list(s.list()):
