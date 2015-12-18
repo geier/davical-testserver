@@ -27,13 +27,16 @@ class ServerMixin(object):
     @pytest.fixture
     def get_storage_args(self, davical_args, request):
         def inner(collection='test'):
-            args = davical_args
-            collection = collection or 'test'
+            if collection is None:
+                return davical_args
+
             assert collection.startswith('test')
 
             for _ in range(4):
-                collection += str(uuid.uuid4())
-                args = self.storage_class.create_collection(collection, **args)
+                args = self.storage_class.create_collection(
+                    collection + str(uuid.uuid4()),
+                    **davical_args
+                )
                 s = self.storage_class(**args)
                 if not list(s.list()):
                     request.addfinalizer(
