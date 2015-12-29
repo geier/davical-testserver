@@ -8,9 +8,7 @@ caldav_args = {
     'username': os.environ['DAVICAL_USERNAME'].strip(),
     'password': os.environ['DAVICAL_PASSWORD'].strip(),
     'url': 'https://brutus.lostpackets.de/davical/caldav.php/',
-    'verify': False,
-    'verify_fingerprint': \
-        '36:B0:8B:AD:66:C6:FB:B0:1B:4E:CC:8A:07:C8:FF:37:49:AD:87:DE'
+    'verify': True
 }
 
 
